@@ -30,7 +30,7 @@ IMAGE_UTILS_NAME=ondewo-sip-client-utils-js:${ONDEWO_SIP_VERSION}
 PRETTIER_WRITE?=
 
 CURRENT_RELEASE_NOTES=`cat RELEASE.md \
-	| sed -n '/Release ONDEWO SIP JS Client ${ONDEWO_SIP_VERSION}/,/\*\*/p'`
+	| sed -n '/Release ONDEWO SIP Js Client ${ONDEWO_SIP_VERSION}/,/\*\*/p'`
 
 
 GH_REPO="https://github.com/ondewo/ondewo-sip-client-js"
