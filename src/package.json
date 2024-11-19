@@ -1,6 +1,6 @@
 {
 	"name": "@ondewo/ondewo-sip-client-js",
-	"version": "4.0.0",
+	"version": "5.2.0",
 	"description": "ONDEWO Session Initiation Protocol (SIP) Client library for Js",
 	"author": "ONDEWO GmbH",
 	"homepage": "https://ondewo.com",
