@@ -4,9 +4,33 @@
 		<meta charset="UTF-8" />
 		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>SIP JS CLIENT TEST</title>
+		<title>ONDEWO SIP JS CLIENT EXAMPLE</title>
 	</head>
 	<body>
-		<script src="client.js"></script>
+		<!--
+			Browser example. The compiled bundle publishes the `ondewo_sip_api` global (SipPromiseClient +
+			request/response message classes). Authentication uses a Keycloak bearer token in the gRPC
+			metadata (`Authorization: Bearer <access_token>`); obtain it from your app's Keycloak login (see
+			../auth/offlineTokenProvider.js for the headless-SDK helper). The runnable Node variant that wires
+			the login helper end-to-end lives in ./client.js.
+		-->
+		<script src="../api/ondewo_sip_api.min.js"></script>
+		<script>
+			// The gRPC-web (envoy) endpoint that fronts the SIP gRPC server.
+			const client = new ondewo_sip_api.SipPromiseClient('https://localhost:8443');
+
+			// Replace with a live access token from your Keycloak login.
+			const accessToken = 'REPLACE_WITH_KEYCLOAK_ACCESS_TOKEN';
+			const metadata = { authorization: 'Bearer ' + accessToken };
+
+			const request = new ondewo_sip_api.SipRegisterAccountRequest();
+			request.setAccountName('sip-user-1@mydomain.com');
+			request.setPassword('sip-secret');
+
+			client
+				.sipRegisterAccount(request, metadata)
+				.then((status) => console.log('-- SIP register status --', status.getStatusType(), status.getDescription()))
+				.catch((error) => console.error('-- SIP register failed --', error));
+		</script>
 	</body>
 </html>

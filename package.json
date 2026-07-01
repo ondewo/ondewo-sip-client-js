@@ -18,7 +18,9 @@
 		"directory": "https://github.com/ondewo/ondewo-sip-client-js.git"
 	},
 	"scripts": {
-		"test": "c8 --check-coverage --lines 100 --branches 100 --functions 100 --include auth/offlineTokenProvider.js --exclude **/*.spec.js --reporter text node --test auth/offlineTokenProvider.spec.js"
+		"test": "npm run test:auth && npm run test:examples",
+		"test:auth": "c8 --check-coverage --lines 100 --branches 100 --functions 100 --include auth/offlineTokenProvider.js --exclude '**/*.spec.js' --reporter text node --test auth/offlineTokenProvider.spec.js",
+		"test:examples": "c8 --check-coverage --lines 100 --branches 100 --functions 100 --include examples/sipStatusExample.js --exclude '**/*.spec.js' --reporter text node --test examples/sipStatusExample.spec.js"
 	},
 	"dependencies": {
 		"google-protobuf": "^3.21.4",
