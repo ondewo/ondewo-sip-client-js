@@ -132,7 +132,7 @@ runTestCase('registerSipAccount builds the request, sends the bearer metadata, a
 
 	// Exactly one RPC, carrying the built request and the Keycloak bearer token as gRPC metadata.
 	assert.equal(calls.length, 1);
-	assert.deepEqual(calls[0].metadata, { authorization: 'Bearer access-token-1' });
+	assert.deepEqual(calls[0].metadata, { Authorization: 'Bearer access-token-1' });
 
 	// The request was populated from the account via the generated setters.
 	assert.deepEqual(calls[0].request.fields, {

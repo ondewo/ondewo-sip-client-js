@@ -21,7 +21,7 @@
 
 			// Replace with a live access token from your Keycloak login.
 			const accessToken = 'REPLACE_WITH_KEYCLOAK_ACCESS_TOKEN';
-			const metadata = { authorization: 'Bearer ' + accessToken };
+			const metadata = { Authorization: 'Bearer ' + accessToken };
 
 			const request = new ondewo_sip_api.SipRegisterAccountRequest();
 			request.setAccountName('sip-user-1@mydomain.com');

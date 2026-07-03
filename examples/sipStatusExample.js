@@ -98,7 +98,7 @@ function buildRegisterAccountRequest(sipApi, account) {
  */
 async function registerSipAccount({ sipApi, client, account, authorizationHeader }) {
 	const request = buildRegisterAccountRequest(sipApi, account);
-	const metadata = { authorization: authorizationHeader };
+	const metadata = { Authorization: authorizationHeader };
 	const status = await client.sipRegisterAccount(request, metadata);
 	return {
 		accountName: status.getAccountName(),
