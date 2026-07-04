@@ -21,6 +21,8 @@
 
 'use strict';
 
+/* global require */
+
 const { test: runTestCase } = require('node:test');
 const assert = require('node:assert/strict');
 

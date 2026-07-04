@@ -20,24 +20,37 @@
 //   2. ./sipStatusExample.js         -- the request/response logic (build SipRegisterAccountRequest, call
 //      the RPC with the bearer metadata, map the SipStatus response).
 //
-// The generated SIP API classes come from the compiled bundle (../api/ondewo_sip_api.js), which publishes
-// the `ondewo_sip_api` namespace as a global. Replace the placeholder connection details below with your
+// The generated SIP API classes come from the compiled bundle (../api/ondewo_sip_api.min.js), which this
+// example loads into the Node process (the bundle is a browser `<script>` global; evaluating it in a fresh
+// Function scope makes it usable from Node). Replace the placeholder connection details below with your
 // own before running:  node examples/client.js
 
 'use strict';
+
+/* global require, __dirname */
+
+const fs = require('node:fs');
+const path = require('node:path');
 
 const { login } = require('../auth/offlineTokenProvider');
 const { registerSipAccount } = require('./sipStatusExample');
 
 /**
- * The ONDEWO SIP API namespace published by the compiled bundle (../api/ondewo_sip_api.js). In the
- * browser it is the `ondewo_sip_api` global injected by the `<script>` tag; in Node it is read off
- * `globalThis` once the bundle has been loaded. Cast to keep this glue decoupled from the generated
- * (untyped) stub surface.
+ * Load the generated ONDEWO SIP API namespace from the compiled bundle (../api/ondewo_sip_api.min.js).
+ * The bundle is a webpack `var`-target browser library that exposes `ondewo_sip_api`; evaluating it in a
+ * fresh `Function` scope and returning that binding makes it usable from Node without a `<script>` tag.
  *
- * @type {*}
+ * @returns {*}
+ *     The `ondewo_sip_api` namespace exposing the generated client + message classes (typed `*` to keep
+ *     this glue decoupled from the generated, untyped stub surface).
  */
-const sipApi = /** @type {*} */ (globalThis).ondewo_sip_api;
+function loadSipApiNamespace() {
+	const bundlePath = path.join(__dirname, '..', 'api', 'ondewo_sip_api.min.js');
+	const source = fs.readFileSync(bundlePath, 'utf8');
+	return new Function(`${source}\n;return ondewo_sip_api;`)();
+}
+
+const sipApi = loadSipApiNamespace();
 
 /** The gRPC-web (envoy) endpoint that fronts the SIP gRPC server. */
 const GRPC_WEB_URL = 'https://localhost:8443';

@@ -25,6 +25,8 @@
 
 'use strict';
 
+/* global module */
+
 /**
  * A plain descriptor of the SIP account to register.
  *
