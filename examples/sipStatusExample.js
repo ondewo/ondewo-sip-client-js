@@ -101,12 +101,17 @@ function buildRegisterAccountRequest(sipApi, account) {
 async function registerSipAccount({ sipApi, client, account, authorizationHeader }) {
 	const request = buildRegisterAccountRequest(sipApi, account);
 	const metadata = { Authorization: authorizationHeader };
+	console.log(`Registering SIP account "${account.accountName}" via sipRegisterAccount`);
 	const status = await client.sipRegisterAccount(request, metadata);
-	return {
+	const summary = {
 		accountName: status.getAccountName(),
 		statusType: status.getStatusType(),
 		description: status.getDescription()
 	};
+	console.log(
+		`SIP account "${summary.accountName}" registered with status ${summary.statusType}: ${summary.description}`
+	);
+	return summary;
 }
 
 module.exports = { buildRegisterAccountRequest, registerSipAccount };

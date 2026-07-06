@@ -27,13 +27,90 @@
 
 'use strict';
 
-/* global require, __dirname */
+/* global require, __dirname, process */
 
 const fs = require('node:fs');
 const path = require('node:path');
 
+// Load the example configuration from examples/environment.env (path relative to this script, so the
+// current working directory does not matter). All connection/Keycloak/SIP values are read from the
+// canonical environment variables below -- see examples/environment.env for the template.
+require('dotenv').config({ path: path.join(__dirname, 'environment.env'), quiet: true });
+
 const { login } = require('../auth/offlineTokenProvider');
 const { registerSipAccount } = require('./sipStatusExample');
+
+/**
+ * Read a required environment variable, failing fast with a descriptive error when it is missing.
+ *
+ * @param {string} name
+ *     The canonical environment-variable name (e.g. `ONDEWO_HOST`).
+ * @returns {string}
+ *     The non-empty value of the variable.
+ * @throws {Error}
+ *     When the variable is unset or empty.
+ */
+function requireEnv(name) {
+	const value = process.env[name];
+	if (typeof value !== 'string' || value.length === 0) {
+		throw new Error(`Missing required environment variable ${name}; set it in examples/environment.env`);
+	}
+	return value;
+}
+
+/**
+ * Read an optional environment variable, returning an empty string when it is unset or blank.
+ *
+ * @param {string} name
+ *     The canonical environment-variable name.
+ * @returns {string}
+ *     The value, or `''` when unset/blank.
+ */
+function optionalEnv(name) {
+	const value = process.env[name];
+	if (typeof value === 'string' && value.length > 0) {
+		return value;
+	}
+	return '';
+}
+
+/**
+ * Parse a boolean environment variable (`'true'`/`'false'`, case-insensitive), falling back to a default.
+ *
+ * @param {string} name
+ *     The canonical environment-variable name.
+ * @param {boolean} defaultValue
+ *     The value to use when the variable is unset or blank.
+ * @returns {boolean}
+ *     The parsed boolean.
+ */
+function parseBoolEnv(name, defaultValue) {
+	const value = process.env[name];
+	if (typeof value !== 'string' || value.length === 0) {
+		return defaultValue;
+	}
+	return value.trim().toLowerCase() === 'true';
+}
+
+/**
+ * Build the gRPC-web endpoint URL from the canonical connection variables.
+ *
+ * @param {string} host
+ *     The value of `ONDEWO_HOST`.
+ * @param {string} port
+ *     The value of `ONDEWO_PORT`.
+ * @param {boolean} useSecureChannel
+ *     The value of `ONDEWO_USE_SECURE_CHANNEL` (`true` -> `https`, `false` -> `http`).
+ * @returns {string}
+ *     The `<scheme>://<host>:<port>` endpoint URL.
+ */
+function buildGrpcWebUrl(host, port, useSecureChannel) {
+	let scheme = 'http';
+	if (useSecureChannel) {
+		scheme = 'https';
+	}
+	return `${scheme}://${host}:${port}`;
+}
 
 /**
  * Load the generated ONDEWO SIP API namespace from the compiled bundle (../api/ondewo_sip_api.min.js).
@@ -52,42 +129,54 @@ function loadSipApiNamespace() {
 
 const sipApi = loadSipApiNamespace();
 
-/** The gRPC-web (envoy) endpoint that fronts the SIP gRPC server. */
-const GRPC_WEB_URL = 'https://localhost:8443';
-
-/** Keycloak connection + PUBLIC SDK client used by the offline-token helper. */
-const KEYCLOAK = {
-	keycloakUrl: 'https://localhost:8443/auth',
-	realm: 'ondewo-ccai-platform',
-	clientId: 'ondewo-sip-cai-sdk-public',
-	username: 'my-technical-user@example.com',
-	password: 'change-me'
-};
-
-/** The SIP account to register. */
-const ACCOUNT = {
-	accountName: 'sip-user-1@mydomain.com',
-	password: 'sip-secret'
-};
-
 /**
- * Run the example end-to-end: Keycloak login -> construct the SIP client -> register the account ->
- * print the resulting status. The background token refresh is always stopped afterwards.
+ * Run the example end-to-end: read config -> Keycloak login -> construct the SIP client -> register the
+ * account -> print the resulting status. The background token refresh is always stopped afterwards.
  *
  * @returns {Promise<void>}
  *     Resolves once the status has been printed.
  */
 async function main() {
-	const tokenProvider = await login(KEYCLOAK);
+	console.log('START: ONDEWO SIP client example');
+
+	// The gRPC-web (envoy) endpoint that fronts the SIP gRPC server.
+	const grpcWebUrl = buildGrpcWebUrl(
+		requireEnv('ONDEWO_HOST'),
+		requireEnv('ONDEWO_PORT'),
+		parseBoolEnv('ONDEWO_USE_SECURE_CHANNEL', true)
+	);
+
+	// Keycloak connection + PUBLIC SDK client used by the D18 offline-token helper.
+	const keycloak = {
+		keycloakUrl: requireEnv('KEYCLOAK_URL'),
+		realm: requireEnv('KEYCLOAK_REALM'),
+		clientId: requireEnv('KEYCLOAK_CLIENT_ID'),
+		username: requireEnv('KEYCLOAK_USER_NAME'),
+		password: requireEnv('KEYCLOAK_PASSWORD'),
+		keycloakVerifySsl: parseBoolEnv('KEYCLOAK_VERIFY_SSL', true)
+	};
+
+	// The SIP account to register (optional fields are omitted when blank).
+	const account = {
+		accountName: requireEnv('ONDEWO_SIP_ACCOUNT_NAME'),
+		password: requireEnv('ONDEWO_SIP_ACCOUNT_PASSWORD'),
+		authUsername: optionalEnv('ONDEWO_SIP_AUTH_USERNAME'),
+		outboundProxy: optionalEnv('ONDEWO_SIP_OUTBOUND_PROXY')
+	};
+
+	console.log(`Logging in to Keycloak realm "${keycloak.realm}" at ${keycloak.keycloakUrl} as ${keycloak.username}`);
+	const tokenProvider = await login(keycloak);
 	try {
-		const client = new sipApi.SipPromiseClient(GRPC_WEB_URL);
+		console.log(`Connecting to the SIP gRPC-web endpoint at ${grpcWebUrl}`);
+		const client = new sipApi.SipPromiseClient(grpcWebUrl);
 		const summary = await registerSipAccount({
 			sipApi,
 			client,
-			account: ACCOUNT,
+			account,
 			authorizationHeader: tokenProvider.getAuthorizationHeader()
 		});
 		console.log('-- SIP register status --', summary);
+		console.log('DONE: ONDEWO SIP client example');
 	} finally {
 		tokenProvider.stop();
 	}
@@ -95,4 +184,5 @@ async function main() {
 
 main().catch((error) => {
 	console.error('-- SIP client example failed --', error);
+	process.exit(1);
 });
