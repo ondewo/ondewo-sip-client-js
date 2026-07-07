@@ -4,9 +4,47 @@
 		<meta charset="UTF-8" />
 		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>SIP JS CLIENT TEST</title>
+		<title>ONDEWO SIP JS CLIENT EXAMPLE</title>
 	</head>
 	<body>
-		<script src="client.js"></script>
+		<!--
+			Browser example. The compiled bundle publishes the `ondewo_sip_api` global (SipPromiseClient +
+			request/response message classes). Authentication uses a Keycloak bearer token in the gRPC
+			metadata (`Authorization: Bearer <access_token>`); obtain it from your app's Keycloak login (see
+			../auth/offlineTokenProvider.js for the headless-SDK helper). The runnable Node variant that wires
+			the login helper end-to-end lives in ./client.js.
+		-->
+		<script src="../api/ondewo_sip_api.min.js"></script>
+		<script>
+			// This runs in the browser, so there is no dotenv: replace the placeholders below with your own
+			// values. The names in the comments match the canonical variables used by the Node examples in
+			// examples/environment.env, so the same concept keeps the same name everywhere.
+			(async () => {
+				try {
+					console.log('START: ONDEWO SIP browser example');
+
+					// The gRPC-web (envoy) endpoint that fronts the SIP gRPC server.
+					// ONDEWO_USE_SECURE_CHANNEL -> scheme, ONDEWO_HOST -> host, ONDEWO_PORT -> port.
+					const grpcWebUrl = 'https://localhost:8443';
+					const client = new ondewo_sip_api.SipPromiseClient(grpcWebUrl);
+
+					// Replace with a live access token from your Keycloak login (see ../auth/offlineTokenProvider.js).
+					const accessToken = 'REPLACE_WITH_KEYCLOAK_ACCESS_TOKEN';
+					const metadata = { Authorization: 'Bearer ' + accessToken };
+
+					const request = new ondewo_sip_api.SipRegisterAccountRequest();
+					// ONDEWO_SIP_ACCOUNT_NAME and ONDEWO_SIP_ACCOUNT_PASSWORD.
+					request.setAccountName('sip-user-1@mydomain.com');
+					request.setPassword('sip-secret');
+
+					console.log('Registering SIP account via ' + grpcWebUrl);
+					const status = await client.sipRegisterAccount(request, metadata);
+					console.log('-- SIP register status --', status.getStatusType(), status.getDescription());
+					console.log('DONE: ONDEWO SIP browser example');
+				} catch (error) {
+					console.error('-- SIP register failed --', error);
+				}
+			})();
+		</script>
 	</body>
 </html>
