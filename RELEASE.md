@@ -1,31 +1,36 @@
 # Release History
 
-***************** 
-## Release ONDEWO SIP Js Client 5.3.0 
- 
-### Improvements 
- * Tracking API Version [5.3.0](https://github.com/ondewo/ondewo-sip-api/releases/tag/5.3.0) ( [Documentation](https://ondewo.github.io/ondewo-sip-api/) ) 
+*****************
 
+## Release ONDEWO SIP Js Client 5.3.0
 
-***************** 
-## Release ONDEWO SIP Js Client 5.2.0 
- 
-### Improvements 
- * Tracking API Version [5.2.0](https://github.com/ondewo/ondewo-sip-api/releases/tag/5.2.0) ( [Documentation](https://ondewo.github.io/ondewo-sip-api/) ) 
+### Improvements
 
+* Tracking API Version [5.3.0](https://github.com/ondewo/ondewo-sip-api/releases/tag/5.3.0) ( [Documentation](https://ondewo.github.io/ondewo-sip-api/) )
 
-***************** 
-## Release ONDEWO SIP Js Client 4.0.0 
- 
-### Improvements 
- * Tracking API Version [4.0.0](https://github.com/ondewo/ondewo-sip-api/releases/tag/4.0.0) ( [Documentation](https://ondewo.github.io/ondewo-sip-api/) ) 
+*****************
 
+## Release ONDEWO SIP Js Client 5.2.0
 
-***************** 
-## Release ONDEWO SIP Js Client 3.3.0 
- 
-### Improvements 
- * Tracking API Version [3.3.0](https://github.com/ondewo/ondewo-sip-api/releases/tag/3.3.0) ( [Documentation](https://ondewo.github.io/ondewo-sip-api/) ) 
+### Improvements
+
+* Tracking API Version [5.2.0](https://github.com/ondewo/ondewo-sip-api/releases/tag/5.2.0) ( [Documentation](https://ondewo.github.io/ondewo-sip-api/) )
+
+*****************
+
+## Release ONDEWO SIP Js Client 4.0.0
+
+### Improvements
+
+* Tracking API Version [4.0.0](https://github.com/ondewo/ondewo-sip-api/releases/tag/4.0.0) ( [Documentation](https://ondewo.github.io/ondewo-sip-api/) )
+
+*****************
+
+## Release ONDEWO SIP Js Client 3.3.0
+
+### Improvements
+
+* Tracking API Version [3.3.0](https://github.com/ondewo/ondewo-sip-api/releases/tag/3.3.0) ( [Documentation](https://ondewo.github.io/ondewo-sip-api/) )
 
 *****************
 
