@@ -57,6 +57,8 @@ npm
 └── README.md
 ```
 
+[comment]: <> (START OF GITHUB README)
+
 ## Build
 
 The `make build` command is dependent on 2 `repositories` and their speciefied `version`:
@@ -114,3 +116,5 @@ TODO after PR merge:
 6. Create a new `Release` on GitHub
 
 > :warning: The Release Automation checks if the build has created all the proto-code files, but it does not check the code-integrity. Please build and test the generated code prior to starting the release process.
+
+[comment]: <> (END OF GITHUB README)
