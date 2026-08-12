@@ -1,5 +1,12 @@
 # Release History
 
+***************** 
+## Release ONDEWO SIP Js Client 5.4.0 
+ 
+### Improvements 
+ * Tracking API Version [5.4.0](https://github.com/ondewo/ondewo-sip-api/releases/tag/5.4.0) ( [Documentation](https://ondewo.github.io/ondewo-sip-api/) ) 
+
+
 *****************
 
 ## Release ONDEWO SIP Js Client 5.3.0
