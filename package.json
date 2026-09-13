@@ -14,7 +14,7 @@
     "grpc"
   ],
   "scripts": {
-    "test": "npm run test:auth && npm run test:examples",
+    "test": "npm run test:auth && npm run test:examples && npm run test:protos",
     "initialize": "git submodule update --init --recursive --remote",
     "build": "docker run -v ${PWD}:/input-volume -v ${PWD}/../api:/output-volume ondewo-js-proto-compiler ondewo-sip-api ondewo-sip-api ondewo",
     "debug": "docker run --entrypoint /bin/bash -v ${PWD}/src:/input-volume -v ${PWD}/src/..:/output-volume $npm_package_config_compiler",
@@ -24,7 +24,8 @@
     "example-link-lib": "sudo ln -s lib/sip.js example/lib/sip.js",
     "build-sample": "docker run -v ${PWD}/src:/input-volume -v ${PWD}/src/../api:/output-volume $npm_package_config_compiler sip ondewo-sip-api ondewo-sip-api ondewo",
     "test:auth": "c8 --check-coverage --lines 100 --branches 100 --functions 100 --include auth/offlineTokenProvider.js --exclude '**/*.spec.js' --reporter text node --test auth/offlineTokenProvider.spec.js",
-    "test:examples": "c8 --check-coverage --lines 100 --branches 100 --functions 100 --include examples/sipStatusExample.js --exclude '**/*.spec.js' --reporter text node --test examples/sipStatusExample.spec.js"
+    "test:examples": "c8 --check-coverage --lines 100 --branches 100 --functions 100 --include examples/sipStatusExample.js --exclude '**/*.spec.js' --reporter text node --test examples/sipStatusExample.spec.js",
+    "test:protos": "node --test tests/bundleStringRoundTrip.spec.js"
   },
   "repository": {
     "type": "git",
