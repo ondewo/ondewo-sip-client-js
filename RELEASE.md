@@ -2,6 +2,38 @@
 
 *****************
 
+## Release ONDEWO SIP Js Client 5.5.0
+
+### New Features
+
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) Tracks
+  [ONDEWO SIP API 5.5.0](https://github.com/ondewo/ondewo-sip-api/releases/tag/5.5.0) (was 5.4.0). The generated
+  bundle now carries:
+  * Answering machine detection: status `OUTGOING_CALL_ANSWERING_MACHINE_DETECTED`, `AnsweringMachineDetectionResult`,
+    `SipStatus.amd_result`, `SipEndCallRequest.end_reason` (`EndCallReason`, incl. `ANSWERING_MACHINE`,
+    `ANSWERING_MACHINE_VOICE_MESSAGE_LEFT` and `END_CALL_REASON_TRANSFERRED`) and `SipEndCallRequest.amd_result`, and
+    the RPC `SipReportAnsweringMachineDetected`.
+  * Call identity: `SipStatus.call_id`. A request is scoped to a call with the `x-ondewo-expected-call-id` gRPC
+    metadatum (pass it in the per-call metadata of the generated client).
+  * `SipSetCallMediaControl` (`SipSetCallMediaControlRequest`, `MediaControlSetting`, `MediaControlOwner`) for
+    call-scoped operator media control; `SipStatus.bot_muted` and `SipStatus.listening_paused` report the effective
+    level.
+  * Truthful transfers: `SipTransferCallRequest.outcome_timeout_ms` and `SipStatus.sip_response_code`.
+  * The live call audio messages (`SipCallAudioRequest`, `SipCallAudioResponse`, `SipCallAudioConfig`,
+    `SipCallAudioFrame`, `SipCallAudioStarted`, `SipCallAudioStats`, `SipCallAudioEnded`, `SipCallAudioMode`,
+    `SipCallAudioEndReason`) and `SipStatus.call_audio_streams`. The RPC `SipStreamCallAudio` itself is
+    bidirectional streaming, which gRPC-web does not support, so the generated `SipClient` has no method for it; use
+    a native gRPC client (e.g. the Node.js or Python SDK) for live call audio.
+* The API change is purely additive: a client built against 5.4.0 stays wire-compatible.
+
+### Build
+
+* Regenerated with [ondewo-proto-compiler 5.15.5](https://github.com/ondewo/ondewo-proto-compiler/releases/tag/5.15.5)
+  (previous release: 5.15.2). The embedded `google-protobuf` runtime stays on the 4.x line (`^4.0.2`), and
+  `tests/bundleStringRoundTrip.spec.js` passes on the shipped bundle.
+
+*****************
+
 ## Release ONDEWO SIP Js Client 5.4.2
 
 ### Improvements
