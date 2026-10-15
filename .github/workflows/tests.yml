@@ -2,22 +2,32 @@ name: tests
 
 on:
   push:
-    branches: ['**']
+    branches:
+      - master
+      - 'release/**'
+    tags:
+      - '*'
   pull_request:
 
 jobs:
   unit-tests:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v5
+      # actions/checkout starts with a bare `git init`, and git then prints a multi-line
+      # "Using 'master' as the name for the initial branch" hint into every job log. Naming the
+      # default up front silences it; master is this repository's default branch anyway.
+      - name: Name git's default branch
+        run: git config --global init.defaultBranch master
 
-      - name: Set up Node.js 20
-        uses: actions/setup-node@v5
+      - uses: actions/checkout@v7
+
+      - name: Set up Node.js 24
+        uses: actions/setup-node@v7
         with:
-          node-version: '20'
+          node-version: '24'
 
       - name: Install dependencies
-        run: npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
 
       # The repo is ~95% generated gRPC/protobuf stubs; coverage is gated on the HAND-WRITTEN surface only.
       # `npm test` runs node's built-in test runner under c8 and enforces TWO 100% line/branch/function
